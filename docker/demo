@@ -1,0 +1,7 @@
+官网的安装及例子,不错
+https://docs.docker.com/get-started/
+已经在官网注册了dockerid:chriscohen, 建了自己的仓库
+
+注1: docker push chriscohen/get-started:v1    #push的时候/前面必须和自己注册的名字一样.
+
+注2: docker rmi imageid 删除不了,可以docker rmi imagename即REPOSITORY
