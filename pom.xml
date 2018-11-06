@@ -40,6 +40,45 @@
             <artifactId>snappy-java</artifactId>
             <version>1.1.7.1</version>
         </dependency>
+        <dependency>
+            <groupId>com.github.cgdon</groupId>
+            <artifactId>fqueue</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.protobuf</groupId>
+            <artifactId>protobuf-java</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/javax.servlet.jsp.jstl/jstl &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>javax.servlet.jsp.jstl</groupId>-->
+            <!--<artifactId>jstl</artifactId>-->
+            <!--<version>1.2</version>-->
+        <!--</dependency>-->
+
+        <!--&lt;!&ndash; https://mvnrepository.com/artifact/taglibs/standard &ndash;&gt;-->
+        <!--<dependency>-->
+            <!--<groupId>taglibs</groupId>-->
+            <!--<artifactId>standard</artifactId>-->
+            <!--<version>1.1.2</version>-->
+        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/commons-el/commons-el -->
+        <!--<dependency>-->
+            <!--<groupId>commons-el</groupId>-->
+            <!--<artifactId>commons-el</artifactId>-->
+            <!--<version>1.0</version>-->
+        <!--</dependency>-->
+
+        <!-- https://mvnrepository.com/artifact/xyz.javecs.tools/expr -->
+        <!--<dependency>-->
+            <!--<groupId>xyz.javecs.tools</groupId>-->
+            <!--<artifactId>expr</artifactId>-->
+            <!--<version>0.2.5</version>-->
+        <!--</dependency>-->
+
 
     </dependencies>
 
