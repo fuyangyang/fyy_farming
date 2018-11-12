@@ -20,6 +20,10 @@ public class DateUtils {
         return SDF_DATE.parse(str).getTime();
     }
 
+    public static String getTime(long ts) {
+        return SDF_DATE_TIME.format(new Date(ts));
+    }
+
     public static String addDay(int num) {
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.DATE, num);
@@ -35,5 +39,8 @@ public class DateUtils {
 
     public static void main(String[] args) throws ParseException {
         System.out.println(addDay("2017-12-31", 1));
+        System.out.println(getTime(1542024278466L));
     }
+
+
 }
