@@ -1,0 +1,30 @@
+1. 当管道传给xargs后面的命令有多个参数时，比如cp 1/a.txt 2/， cp后面接两个参数，但是前面传过来1/a.txt，是放在cp的第一个参数位置还是第二个？
+   解法：可以使用xargs -i，然后把{}当作参数，{}放在第几个位置，就表示要传到第几个位置
+
+
+   $ find 1
+   1
+   1/a.txt
+   $ find 2
+   2
+   $ find 1/* | xargs -i cp {} 2/
+   $ find 1
+   1
+   1/a.txt
+   $ find 2
+   2
+   2/a.txt
+2. 删除 -head 这个文件，如果直接 rm -head是删除不了的，可以用rm -- -head
+
+3. 删除多个文件，可以用rm file1 file2 file3一次搞定
+
+4. timer
+#!/bin/bash
+
+start=$(date +%s)
+sleep 2
+end=$(date +%s)
+echo "cost seconds:"$(( $end - $start ))
+
+5. 强制安装rpm在后面加--nodeps --force
+sudo rpm -ivh http://xxx.rpm --nodeps --force
