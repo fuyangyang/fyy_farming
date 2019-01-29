@@ -1,0 +1,5 @@
+1.获取最近一次提交的commit id
+获取完整commit id（如：14123c8877e6ebdc220e205d92fc70feaf06dab1）
+    git rev-parse HEAD
+获取short commit id（如：14123c8）
+    git rev-parse --short HEAD
