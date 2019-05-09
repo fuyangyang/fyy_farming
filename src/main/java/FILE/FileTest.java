@@ -17,7 +17,6 @@ public class FileTest {
 
     private static void listFiles(String name) {
         File file = new File(name);
-
 //        if(file.isDirectory()) {
 //            System.out.println("file:" + name);
 //            File[] files = file.listFiles();

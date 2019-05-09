@@ -1,8 +1,11 @@
 package com;
 
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import static java.util.Calendar.LONG;
 
@@ -26,8 +29,24 @@ public class BasicTest {
         System.out.println("case2: " + s2.equals(s1));
     }
 
-    public static void main(String[] args) {
-//        -9223372036854775808L
-        System.out.println(Long.MIN_VALUE);
+    /**
+     * 获取当前进程的pid
+     *
+     * @return
+     */
+    public static int getPid() {
+        RuntimeMXBean runtime = ManagementFactory.getRuntimeMXBean();
+        // format: "pid@hostname"
+        String name = runtime.getName();
+        return Integer.parseInt(name.substring(0, name.indexOf('@')));
     }
+
+    public static void main(String[] args) throws Exception {
+        while(true) {
+            int pid = getPid();
+            System.out.println(pid);
+            TimeUnit.SECONDS.sleep(111);
+        }
+    }
+
 }

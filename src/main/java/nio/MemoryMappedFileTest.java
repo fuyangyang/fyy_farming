@@ -20,7 +20,7 @@ import java.nio.channels.FileChannel;
  * （3）mmap可以进程间共享，mmap使用的是堆外内存，不在JVM内，如果在JVM内就不能进程共享了
  * （4）mmap相比文件操作免去了用户内存和核心态内存的一次数据拷贝过程
  * （5）写一块数据到磁盘，用mmap和带缓冲的写磁盘两种方式，mmap整体性能高10倍, 如果磁盘写性能是瓶颈的话，应该差不多啊，mmap也要从内存写到磁盘。
- * （6）mmap与直接内存有什么关系
+ * （6）mmap与直接内存有什么关系？mmap目标是把数据写到磁盘，而直接内存（也叫堆外内存）是使用JVM堆内存之外的内存，防止Full GC。
  */
 public class MemoryMappedFileTest {
 
@@ -48,7 +48,6 @@ public class MemoryMappedFileTest {
             System.out.print((char) mmap.get(i));
         }
         System.out.println("Reading from Memory Mapped File is completed");
-
         memoryMappedFile.close();
     }
 
@@ -62,7 +61,7 @@ public class MemoryMappedFileTest {
      * @throws Exception
      */
     public static void testPerformace() throws Exception {
-        int size = 1000000000;
+        int size = 100000000;
         RandomAccessFile memoryMappedFile = new RandomAccessFile("/Users/fuyangyang/github/fyy_farming/mmap.txt", "rw");
         MappedByteBuffer mmap = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, size);
         long start = System.currentTimeMillis();

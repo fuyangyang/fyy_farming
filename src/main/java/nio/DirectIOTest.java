@@ -7,7 +7,7 @@ import java.nio.ByteBuffer;
  */
 public class DirectIOTest {
     public static void main(String[] args) {
-//        useDirectMemory();
+        useDirectMemory();
         useHeapMemory();
     }
 
