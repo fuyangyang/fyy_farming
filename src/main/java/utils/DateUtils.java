@@ -4,6 +4,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Created by fuyi on 18/1/22.
@@ -22,6 +23,10 @@ public class DateUtils {
 
     public static String getTime(long ts) {
         return SDF_DATE_TIME.format(new Date(ts));
+    }
+
+    public static String getTime(long ts, String format) {
+        return new SimpleDateFormat(format).format(new Date(ts));
     }
 
     public static String addDay(int num) {

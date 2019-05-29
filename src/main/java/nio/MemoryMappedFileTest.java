@@ -19,7 +19,7 @@ import java.nio.channels.FileChannel;
  * （2）mmap映射过程耗时还ok，只要操作系统去拿一块连续的磁盘空间
  * （3）mmap可以进程间共享，mmap使用的是堆外内存，不在JVM内，如果在JVM内就不能进程共享了
  * （4）mmap相比文件操作免去了用户内存和核心态内存的一次数据拷贝过程
- * （5）写一块数据到磁盘，用mmap和带缓冲的写磁盘两种方式，mmap整体性能高10倍, 如果磁盘写性能是瓶颈的话，应该差不多啊，mmap也要从内存写到磁盘。
+ * （5）写一块数据到磁盘，用mmap和带缓冲的写磁盘(只能顺序写)两种方式，mmap整体性能高10倍, 如果磁盘写性能是瓶颈的话，应该差不多啊，mmap也要从内存写到磁盘。
  * （6）mmap与直接内存有什么关系？mmap目标是把数据写到磁盘，而直接内存（也叫堆外内存）是使用JVM堆内存之外的内存，防止Full GC。
  */
 public class MemoryMappedFileTest {
@@ -32,7 +32,7 @@ public class MemoryMappedFileTest {
      */
     public static void test() throws Exception {
         RandomAccessFile memoryMappedFile = new RandomAccessFile("/Users/fuyangyang/github/fyy_farming/largeFile.txt", "rw");
-
+        
         // Mapping a file into memory
         MappedByteBuffer mmap = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, COUNT);
 
@@ -52,23 +52,35 @@ public class MemoryMappedFileTest {
     }
 
     /**
+     * mac SSD
+     *
      * nio性能比bufferwrite快10倍, 但是用mmap put完的数据可能会丢失，而写磁盘不会丢
      * 下面写了100000000个A字节到文件中，容量约为95M，下面是性能数据
      * Writing to Memory Mapped File is completed, cost: 204 ms
      * Writing to normal File is completed, cost: 2197 ms
+     *
+     * 如果每次写4k，bos 100ms， mmap 156ms
      *
      * 写950M的数据，两者性能也还是差10倍
      * @throws Exception
      */
     public static void testPerformace() throws Exception {
         int size = 100000000;
+        int chunkSize = 4096;
+        int loop = size /chunkSize;
+        byte[] content = new byte[chunkSize];
+        for (int i = 0; i < chunkSize; i++) {
+            content[i] = 49;
+        }
         RandomAccessFile memoryMappedFile = new RandomAccessFile("/Users/fuyangyang/github/fyy_farming/mmap.txt", "rw");
         MappedByteBuffer mmap = memoryMappedFile.getChannel().map(FileChannel.MapMode.READ_WRITE, 0, size);
         long start = System.currentTimeMillis();
-        for (int i = 0; i < size; i++) {
-            mmap.put((byte) 'A');
-
+        for (int i = 0; i < loop; i++) {
+            mmap.put(content);
         }
+//        for (int i = 0; i < size; i++) {
+//            mmap.put((byte) 'A');
+//        }
         mmap.force();
         long stop = System.currentTimeMillis();
         System.out.println("Writing to Memory Mapped File is completed, cost: " + (stop - start) + " ms");
@@ -76,9 +88,12 @@ public class MemoryMappedFileTest {
 
         BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(new File("/Users/fuyangyang/github/fyy_farming/not_mmap.txt")));
         long begin = System.currentTimeMillis();
-        for (int i = 0; i < size; i++) {
-            bos.write((byte) 'A');
+        for (int i = 0; i < loop; i++) {
+            bos.write(content);
         }
+//        for (int i = 0; i < size; i++) {
+//            bos.write((byte) 'A');
+//        }
         bos.flush();
         bos.close();
         long end = System.currentTimeMillis();
