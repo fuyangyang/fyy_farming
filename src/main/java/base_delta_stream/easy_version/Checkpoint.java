@@ -1,4 +1,6 @@
-package base_delta_stream;
+package base_delta_stream.easy_version;
+
+import com.alibaba.fastjson.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,14 @@ public class Checkpoint {
 
     public void clearAllStream() {
         streamList.clear();
+    }
+
+    public static void main(String[] args) {
+        Checkpoint ckpt = new Checkpoint();
+        ckpt.setCurrentBasePath("path");
+        ckpt.addStream("stream1");
+        ckpt.addDelta("delta1");
+        System.out.println(JSONObject.toJSONString(ckpt));
     }
 
 }

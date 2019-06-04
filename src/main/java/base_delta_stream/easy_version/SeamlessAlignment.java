@@ -1,5 +1,7 @@
-package base_delta_stream;
+package base_delta_stream.easy_version;
 
+import base_delta_stream.FileUtils;
+import com.alibaba.fastjson.JSONObject;
 import utils.DateUtils;
 
 import java.io.BufferedWriter;
@@ -13,11 +15,16 @@ import java.util.Date;
  * 到H时，把stream list中的文件合并成一个delta文件，合成后删除stream文件，并清空stream list变量，把合成的delta文件加入delta list中，并把H加1
  * 到D时，把delta list中的文件合并成一个base文件，合成后删除delta文件，并清空delta list变量，并把D加1
  * 如果list为空，则合成空文件。对于M=H=D的情况，比如整点，需要先处理M，再处理H，最后处理D。
+ *
+ * TODO
+ * case：meta已经存在完整的版本了，在写meta.tmp时进程挂了，需要从meta恢复，故应该保存meta中记录的文件。故过期策略应该是两个D之前的数据。
+ * case：
  */
 public class SeamlessAlignment {
 
     private static final String PATH_PREFIX = "/Users/fuyangyang/github/fyy_farming/tmp/";
     private static final String FIRST_BASE_PATH = PATH_PREFIX + "base0/";
+    private static final String META_PATH = FIRST_BASE_PATH + "meta";
     private Checkpoint checkpoint = new Checkpoint();
     private long eventTime;
     private long currentMinute;
@@ -34,8 +41,6 @@ public class SeamlessAlignment {
 
     private BufferedWriter streamWriter;
     private String streamFilePath;
-
-
 
     private void start() throws Exception {
         initTime();
@@ -70,6 +75,17 @@ public class SeamlessAlignment {
         moveToNextMinute();
         streamFilePath = generateStreamFilePath();
         streamWriter = FileUtils.getFileWriter(streamFilePath);
+        dumpCheckpoint();
+    }
+
+    /**
+     * TODO write to tmp, then mv meta
+     * @throws Exception
+     */
+    private void dumpCheckpoint() throws Exception {
+        BufferedWriter fileWriter = FileUtils.getFileWriter(META_PATH);
+        fileWriter.write(JSONObject.toJSONString(checkpoint));
+        FileUtils.closeFile(fileWriter);
     }
 
     private void onHour() throws Exception {
@@ -87,6 +103,7 @@ public class SeamlessAlignment {
         checkpoint.clearAllStream();
         writer.close();
         checkpoint.addDelta(deltaFilePath);
+        dumpCheckpoint();
         moveToNextHour();
     }
 
@@ -108,6 +125,7 @@ public class SeamlessAlignment {
             }
         }
         checkpoint.clearAllDelta();
+        dumpCheckpoint();
         writer.close();
         moveToNextDay();
     }
