@@ -1,5 +1,7 @@
-package base_delta_stream;
+package base_delta_stream.core.metadata;
 
+import base_delta_stream.core.FileState;
+import base_delta_stream.utils.FileUtils;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;

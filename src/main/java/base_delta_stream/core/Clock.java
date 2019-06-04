@@ -1,6 +1,5 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
-import java.io.IOException;
 
 public interface Clock<T> {
 

@@ -1,4 +1,4 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
 
 /**

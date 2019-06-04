@@ -1,4 +1,4 @@
-package base_delta_stream;
+package base_delta_stream.utils;
 
 import com.google.common.base.Preconditions;
 

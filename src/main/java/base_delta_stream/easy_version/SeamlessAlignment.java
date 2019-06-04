@@ -1,6 +1,6 @@
 package base_delta_stream.easy_version;
 
-import base_delta_stream.FileUtils;
+import base_delta_stream.utils.FileUtils;
 import com.alibaba.fastjson.JSONObject;
 import utils.DateUtils;
 

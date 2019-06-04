@@ -1,5 +1,8 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
+import base_delta_stream.core.Message;
+import base_delta_stream.utils.FileUtils;
+import base_delta_stream.utils.OffsetPair;
 import utils.DateUtils;
 
 import java.io.BufferedWriter;
@@ -72,7 +75,7 @@ public class StreamFileHandler {
         }
         streamWriter = null;
         String finalFileName = currentFileName.split("\\.")[0] + "_" + offsetPair.getStart() + "_" + offsetPair.getEnd();
-        boolean renamed = new File(filePathPrefix + currentFileName).renameTo(new File(filePathPrefix + finalFileName));
+        new File(filePathPrefix + currentFileName).renameTo(new File(filePathPrefix + finalFileName));
         offsetPair.clear();
     }
 }

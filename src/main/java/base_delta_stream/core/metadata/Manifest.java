@@ -1,4 +1,6 @@
-package base_delta_stream;
+package base_delta_stream.core.metadata;
+
+import base_delta_stream.core.FileState;
 
 import java.util.LinkedList;
 import java.util.List;

@@ -16,6 +16,7 @@ public class SignalHandlerExample implements SignalHandler {
         return instance;
     }
 
+    @Override
     public void handle(Signal signal) {
         System.out.println("Signal handler called for signal "
                 + signal);

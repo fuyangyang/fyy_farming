@@ -1,8 +1,8 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
-import static base_delta_stream.Constants.MILL_SEC_IN_DAY;
-import static base_delta_stream.Constants.MILL_SEC_IN_HOUR;
-import static base_delta_stream.Constants.MILL_SEC_IN_MINUTE;
+import static base_delta_stream.constant.Const.MILL_SEC_IN_DAY;
+import static base_delta_stream.constant.Const.MILL_SEC_IN_HOUR;
+import static base_delta_stream.constant.Const.MILL_SEC_IN_MINUTE;
 
 /**
  * 时钟
@@ -80,7 +80,7 @@ public abstract class AbstractClock<T> implements Clock<T> {
     /**
      * 生成一分钟的数据
      */
-    public abstract void onMinute();
+    public abstract void onMinute() throws Exception;
 
 
     private boolean reachNextMinute() {

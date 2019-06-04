@@ -1,5 +1,10 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
+
+/**
+ * 封装成TimedMessage
+ * @param <T>
+ */
 public class Message<T> {
     private long offset;
     private long timestamp;

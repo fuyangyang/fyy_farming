@@ -1,6 +1,6 @@
-package base_delta_stream;
+package base_delta_stream.core;
 
-import java.io.IOException;
+import base_delta_stream.core.metadata.MetaDataManager;
 
 public class MessageDrivenClock extends AbstractClock<Message> {
 
@@ -30,9 +30,10 @@ public class MessageDrivenClock extends AbstractClock<Message> {
     }
 
     @Override
-    public void onMinute() {
+    public void onMinute() throws Exception {
         //分钟文件处理器
         streamFileHandler.onMinute();
+//        metaDataManager.dump();
     }
 
     //TODO message和时间要不要封装成一个DTO类

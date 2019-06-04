@@ -1,4 +1,6 @@
-package base_delta_stream;
+package base_delta_stream.source;
+
+import base_delta_stream.core.Message;
 
 import static java.lang.Thread.sleep;
 

@@ -1,8 +1,11 @@
-package base_delta_stream.main;
+package base_delta_stream;
 
-import base_delta_stream.*;
+import base_delta_stream.core.Clock;
+import base_delta_stream.core.Message;
+import base_delta_stream.core.MessageDrivenClock;
+import base_delta_stream.source.KafkaMessageSource;
 
-public class ClockMain {
+public class Bootstrap {
 
     public void start() throws Exception {
         KafkaMessageSource source = new KafkaMessageSource();
@@ -13,7 +16,7 @@ public class ClockMain {
     }
 
     public static void main(String[] args) throws Exception {
-        ClockMain main = new ClockMain();
+        Bootstrap main = new Bootstrap();
         main.start();
     }
 }

@@ -1,4 +1,4 @@
-package base_delta_stream;
+package base_delta_stream.core.compact;
 
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;

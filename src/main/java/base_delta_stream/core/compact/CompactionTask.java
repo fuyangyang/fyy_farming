@@ -1,7 +1,9 @@
-package base_delta_stream;
+package base_delta_stream.core.compact;
 
-import java.io.BufferedWriter;
-import java.io.File;
+import base_delta_stream.core.FileState;
+import base_delta_stream.core.AbstractClock;
+import base_delta_stream.core.metadata.MetaDataManager;
+
 import java.io.IOException;
 import java.util.List;
 
