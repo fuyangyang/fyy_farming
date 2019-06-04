@@ -1,26 +1,21 @@
 package base_delta_stream.core;
 
-import base_delta_stream.core.Message;
+import base_delta_stream.core.metadata.MetaDataManager;
 import base_delta_stream.utils.FileUtils;
 import base_delta_stream.utils.OffsetPair;
+import com.google.common.collect.Lists;
 import utils.DateUtils;
 
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * 管理分钟级文件的读写
  *
- * 负责：
- * 接受mafka消息的推送
- * 负责从消息中提取时间并及时更新时钟
- * 把消息写入stream文件，在写完一个文件后更新manifest文件。更新逻辑为：在manifest的stream列表头部插入一条entry，并置状态为假。具体做法：先生成manifest.tmp，然后rename成manifest。
- * <p>
- * 注意：
- * 保证每分钟的stream文件生成，然后再看下是否触发合并任务，合并任务包括两种：1）只合并delta；2）合并delta后合并base。
- * 如果触发，则把合并任务提交到合并队列。
- * 然后接着接收消息，生成下一个stream文件。
+ * 负责接受mafka消息的推送
+ * 负责把消息按N分钟写入stream文件，在写完一个文件后更新manifest文件。更新逻辑为：在manifest的stream列表头部插入一条entry，并置状态为假。具体做法：先生成manifest.tmp，然后rename成manifest。
+ *
  */
 public class StreamFileHandler {
 
@@ -41,16 +36,28 @@ public class StreamFileHandler {
      */
     private String currentFileName;
 
-    public StreamFileHandler(String modelPath) {
+    private MetaDataManager metaDataManager;
+
+    /**
+     * 存放delta周期内的stream文件路径
+     */
+    private List<String> streamList;
+
+    public StreamFileHandler(String modelPath, Long currentMinute, MetaDataManager metaDataManager) {
+        this.metaDataManager = metaDataManager;
         this.filePathPrefix = modelPath + "stream/";
         offsetPair = new OffsetPair();
+        generateFileName(currentMinute);
+        try {
+            streamWriter = FileUtils.getFileWriter(filePathPrefix, currentFileName);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+
     }
 
-    public void handleElement(Message message, Long currentMinute) throws IOException {
-        if (streamWriter == null) {
-            generateFileName(currentMinute);
-            streamWriter = FileUtils.getFileWriter(filePathPrefix, currentFileName);
-        }
+    public void handleElement(Message message) throws IOException {
         long offset = message.getOffset();
         offsetPair.setOffset(offset);
         streamWriter.write(message.getContent() + ":" + DateUtils.getTime(message.getTimestamp()));
@@ -67,15 +74,28 @@ public class StreamFileHandler {
     /**
      * 关闭文件，在文件名上加起止offset，清空offset缓存
      */
-    public void onMinute() {
-        try {
-            streamWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        streamWriter = null;
+    public void onMinute(Long nextMinute) throws IOException {
+        streamWriter.close();
         String finalFileName = currentFileName.split("\\.")[0] + "_" + offsetPair.getStart() + "_" + offsetPair.getEnd();
-        new File(filePathPrefix + currentFileName).renameTo(new File(filePathPrefix + finalFileName));
+        String finalFilePath = filePathPrefix + finalFileName;
+        AppendOffsetToFileName(finalFilePath);
+        streamList.add(finalFilePath);
+        metaDataManager.addStreamAndDump(finalFilePath);
         offsetPair.clear();
+        generateFileName(nextMinute);
+        streamWriter = FileUtils.getFileWriter(filePathPrefix, currentFileName);
+    }
+
+    private boolean AppendOffsetToFileName(String finalFilePath) {
+        return FileUtils.renameTo(filePathPrefix + currentFileName, finalFilePath);
+    }
+
+    public List<String> getStreamList() {
+        //TODO check deep copy
+        return Lists.newArrayList(streamList);
+    }
+
+    public void clearStreamList() {
+        streamList.clear();
     }
 }

@@ -1,22 +1,36 @@
 package base_delta_stream.core;
 
+
+import base_delta_stream.core.compact.CompactionTask;
 import base_delta_stream.core.metadata.MetaDataManager;
 
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+
+/**
+ * 注意：
+ * 保证每分钟的stream文件生成，然后再看下是否触发合并任务，合并任务包括两种：1）只合并delta；2）合并delta后合并base。
+ * 如果触发，则把合并任务提交到合并队列。
+ * 然后接着接收消息，生成下一个stream文件。
+ */
 public class MessageDrivenClock extends AbstractClock<Message> {
 
 
     private StreamFileHandler streamFileHandler;
-    private MetaDataManager metaDataManager;
+    private BlockingQueue<CompactionTask> queue;
     private String modelPath;
+    private MetaDataManager metaDataManager;
 
     public MessageDrivenClock(String modelPath) {
         this.modelPath = modelPath;
-        init();
+        metaDataManager = new MetaDataManager(modelPath);
+        queue = new ArrayBlockingQueue(24);
     }
 
-    public void init() {
-        streamFileHandler = new StreamFileHandler(modelPath);
-        metaDataManager = new MetaDataManager(modelPath);
+    @Override
+    protected void initial(Long currentMinute) {
+        streamFileHandler = new StreamFileHandler(modelPath, currentMinute, metaDataManager);
     }
 
     @Override
@@ -25,20 +39,18 @@ public class MessageDrivenClock extends AbstractClock<Message> {
     }
 
     @Override
-    public void onHour(boolean reachNextDay) {
-        //小时级处理器
+    public void onHour(Long nextHour, boolean reachNextDay, Long nextDay) throws Exception {
+        List<String> streamList = streamFileHandler.getStreamList();
+        queue.put(new CompactionTask(modelPath, reachNextDay, streamList, null, metaDataManager));
     }
 
     @Override
-    public void onMinute() throws Exception {
-        //分钟文件处理器
-        streamFileHandler.onMinute();
-//        metaDataManager.dump();
+    public void onMinute(Long nextMinute) throws Exception {
+        streamFileHandler.onMinute(nextMinute);
     }
 
-    //TODO message和时间要不要封装成一个DTO类
     @Override
     protected void handleElement(Message message) throws Exception {
-        streamFileHandler.handleElement(message, getCurrentMinute());
+        streamFileHandler.handleElement(message);
     }
 }

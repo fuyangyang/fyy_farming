@@ -26,4 +26,8 @@ public class FileUtils {
         }
         return new BufferedWriter(new FileWriter(file));
     }
+
+    public static boolean renameTo(String from, String to) {
+        return new File(from).renameTo(new File(to));
+    }
 }

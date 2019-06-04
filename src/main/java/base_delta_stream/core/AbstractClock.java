@@ -5,7 +5,8 @@ import static base_delta_stream.constant.Const.MILL_SEC_IN_HOUR;
 import static base_delta_stream.constant.Const.MILL_SEC_IN_MINUTE;
 
 /**
- * 时钟
+ * 负责从消息中提取时间并及时更新时钟
+
  */
 public abstract class AbstractClock<T> implements Clock<T> {
 
@@ -22,7 +23,7 @@ public abstract class AbstractClock<T> implements Clock<T> {
      */
     private Long currentMinute;
     /**
-     * 用于缓存下一分钟，避免每次计算
+     * 用于缓存下一分钟，避免每次计算，用于结束当前分钟事件
      */
     private Long nextMinute;
     private Long currentHour;
@@ -37,31 +38,36 @@ public abstract class AbstractClock<T> implements Clock<T> {
     public void onElement(T t) throws Exception {
         timestamp = extractTimestamp(t);
         if (!initialed) {
-            updateAllPeriod();
-            initialed = true;
+            init();
         }
 
         if(reachNextMinute()) {
-            onMinute();
-            updateMinutePeriod();
+            updateCurrentMinute();
+            onMinute(currentMinute);
             handleElement(t);
             if (reachNextHour()) {
-                boolean reachNextDay = reachNextDay();
-                onHour(reachNextDay);
-
                 updaterHourPeriod();
+                boolean reachNextDay = reachNextDay();
                 if(reachNextDay) {
                     updateDayPeriod();
                 }
+                onHour(currentHour, reachNextDay, currentDay);
             }
         } else {
             handleElement(t);
         }
     }
 
-    private void resetMinute() {
-
+    private void init() {
+        updateAllPeriod();
+        initialed = true;
+        initial(getCurrentMinute());
     }
+
+    /**
+     * 用户初始化逻辑
+     */
+    protected abstract void initial(Long currentMinute);
 
     protected abstract void handleElement(T t) throws Exception;
 
@@ -75,12 +81,14 @@ public abstract class AbstractClock<T> implements Clock<T> {
      * 合成小时级数据
      * @param reachNextDay
      */
-    public abstract void onHour(boolean reachNextDay);
+    public abstract void onHour(Long nextHour, boolean reachNextDay, Long nextDay) throws Exception;
 
     /**
-     * 生成一分钟的数据
+     * 完成上一分钟的收尾，开启下一分钟的准备工作
+     * @param nextMinute 下一分钟，可能不是当前分钟加1分钟
+     * @throws Exception
      */
-    public abstract void onMinute() throws Exception;
+    public abstract void onMinute(Long nextMinute) throws Exception;
 
 
     private boolean reachNextMinute() {
@@ -107,25 +115,13 @@ public abstract class AbstractClock<T> implements Clock<T> {
         return currentDay;
     }
 
-    public Long getNextMinute() {
-        return nextMinute;
-    }
-
-    public Long getNextHour() {
-        return nextHour;
-    }
-
-    public Long getNextDay() {
-        return nextDay;
-    }
-
     private void updateAllPeriod() {
-        updateMinutePeriod();
+        updateCurrentMinute();
         updaterHourPeriod();
         updateDayPeriod();
     }
 
-    private void updateMinutePeriod() {
+    private void updateCurrentMinute() {
         currentMinute = timestamp - timestamp % MILL_SEC_IN_MINUTE;
         nextMinute = currentMinute + MILL_SEC_IN_MINUTE;
     }

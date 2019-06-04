@@ -43,7 +43,7 @@ public class compactor {
         @Override
         public Thread newThread(Runnable r) {
             String name = threadName + "-" + threadIndex.incrementAndGet();
-//            LOG.info("One thread={} created", name);
+            System.out.println(String.format("One thread={} created", name));
             Thread thread = new Thread(r, name);
             thread.setDaemon(true);
             return thread;

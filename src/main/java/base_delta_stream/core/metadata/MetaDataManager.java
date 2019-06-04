@@ -31,12 +31,12 @@ public class MetaDataManager {
         manifest.addStream(new FileState(path));
     }
 
-    public void addStreamAndDump(String path) throws Exception {
+    public void addStreamAndDump(String path) {
         addStream(path);
         dump();
     }
 
-    public void addStreamAndDump(FileState state) throws Exception {
+    public void addStreamAndDump(FileState state) {
         addStream(state);
         dump();
     }
@@ -52,12 +52,16 @@ public class MetaDataManager {
         return front;
     }
 
-    public void dump() throws Exception {
+    public void dump() {
         File file = new File(path + ".tmp");
-        FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write(JSONObject.toJSONString(manifest));
-        FileUtils.closeFile(fileWriter);
-        file.renameTo(new File(path));
+        try {
+            FileWriter fileWriter = new FileWriter(file);
+            fileWriter.write(JSONObject.toJSONString(manifest));
+            FileUtils.closeFile(fileWriter);
+            file.renameTo(new File(path));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public String setStreamCompacted(boolean compacted) {

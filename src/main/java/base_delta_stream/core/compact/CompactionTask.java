@@ -14,11 +14,6 @@ import java.util.List;
 public class CompactionTask implements Runnable {
 
     /**
-     * 当前时间
-     */
-    private AbstractClock clock;
-
-    /**
      * 是否触发base合并，如果触发，必须先合并完delta后再合并base。
      */
     private Boolean toCompackBase;
@@ -26,23 +21,21 @@ public class CompactionTask implements Runnable {
     /**
      * 待合并到delta的stream list
      */
-    private List<FileState> streamList;
+    private List<String> streamList;
 
     /**
      * 待合并到base的delta list，如果不触发base合并，本参数可为空
      */
-    private List<FileState> deltaList;
+    private List<String> deltaList;
     private String deltaPath;
     private String basePath;
     private MetaDataManager metaDataManager;
 
     public CompactionTask(String modelPath,
-                          AbstractClock clock,
                           Boolean toCompackBase,
-                          List<FileState> streamList,
-                          List<FileState> deltaList,
+                          List<String> streamList,
+                          List<String> deltaList,
                           MetaDataManager metaDataManager) {
-        this.clock = clock;
         this.toCompackBase = toCompackBase;
         this.streamList = streamList;
         this.deltaList = deltaList;
