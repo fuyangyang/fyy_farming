@@ -8,6 +8,7 @@ import utils.DateUtils;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -32,16 +33,16 @@ public class StreamFileHandler {
     private BufferedWriter streamWriter;
 
     /**
-     * 当前文件名
+     * 正在写的文件名
      */
-    private String currentFileName;
+    private String writingFileName;
 
     private MetaDataManager metaDataManager;
 
     /**
      * 存放delta周期内的stream文件路径
      */
-    private List<String> streamList;
+    private List<String> streamList = new ArrayList<>();
 
     public StreamFileHandler(String modelPath, Long currentMinute, MetaDataManager metaDataManager) {
         this.metaDataManager = metaDataManager;
@@ -49,11 +50,10 @@ public class StreamFileHandler {
         offsetPair = new OffsetPair();
         generateFileName(currentMinute);
         try {
-            streamWriter = FileUtils.getFileWriter(filePathPrefix, currentFileName);
+            streamWriter = FileUtils.getFileWriter(filePathPrefix, writingFileName);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
 
     }
 
@@ -68,7 +68,7 @@ public class StreamFileHandler {
      * 生成新文件的名称，时间改为下一分钟，
      */
     private void generateFileName(Long currentMinute) {
-        currentFileName = DateUtils.getTime(currentMinute, "yyyy-MM-dd-HH-mm-ss") + ".writing";
+        writingFileName = DateUtils.getTime(currentMinute, "yyyy-MM-dd-HH-mm-ss") + ".writing";
     }
 
     /**
@@ -76,26 +76,24 @@ public class StreamFileHandler {
      */
     public void onMinute(Long nextMinute) throws IOException {
         streamWriter.close();
-        String finalFileName = currentFileName.split("\\.")[0] + "_" + offsetPair.getStart() + "_" + offsetPair.getEnd();
-        String finalFilePath = filePathPrefix + finalFileName;
-        AppendOffsetToFileName(finalFilePath);
-        streamList.add(finalFilePath);
-        metaDataManager.addStreamAndDump(finalFilePath);
+        String streamFilePath = filePathPrefix + writingFileName.split("\\.")[0] + "_" + offsetPair.getStart() + "_" + offsetPair.getEnd();;
+        AppendOffsetToFileName(streamFilePath);
+        streamList.add(streamFilePath);
+        metaDataManager.addStreamAndDump(streamFilePath);
         offsetPair.clear();
         generateFileName(nextMinute);
-        streamWriter = FileUtils.getFileWriter(filePathPrefix, currentFileName);
+        streamWriter = FileUtils.getFileWriter(filePathPrefix, writingFileName);
     }
 
     private boolean AppendOffsetToFileName(String finalFilePath) {
-        return FileUtils.renameTo(filePathPrefix + currentFileName, finalFilePath);
+        return FileUtils.renameTo(filePathPrefix + writingFileName, finalFilePath);
     }
 
-    public List<String> getStreamList() {
+    public List<String> fetchStreamListToCompact() {
         //TODO check deep copy
-        return Lists.newArrayList(streamList);
+        ArrayList<String> list = Lists.newArrayList(streamList);
+        streamList.clear();
+        return list;
     }
 
-    public void clearStreamList() {
-        streamList.clear();
-    }
 }

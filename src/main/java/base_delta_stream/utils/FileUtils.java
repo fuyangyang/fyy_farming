@@ -7,7 +7,7 @@ public class FileUtils {
         closeable.close();
     }
 
-    public static BufferedWriter getFileWriter(String filePath) throws Exception {
+    public static BufferedWriter getFileWriter(String filePath) throws IOException {
         File file = new File(filePath);
         String parent = file.getParent();
         File parentFile = new File(parent);

@@ -23,36 +23,33 @@ public class MetaDataManager {
         this.path = basePath + "manifest";
     }
 
-    public void addStream(FileState state) {
+    public synchronized void addStream(String path) {
+        addStream(new FileState(path));
+    }
+
+    public synchronized void addStream(FileState state) {
         manifest.addStream(state);
     }
 
-    public void addStream(String path) {
-        manifest.addStream(new FileState(path));
+    public synchronized void addDelta(String path) {
+        addDelta(new FileState(path));
     }
 
-    public void addStreamAndDump(String path) {
+    public synchronized void addDelta(FileState state) {
+        manifest.addDelta(state);
+    }
+
+    public synchronized void addStreamAndDump(String path) {
         addStream(path);
         dump();
     }
 
-    public void addStreamAndDump(FileState state) {
-        addStream(state);
+    public synchronized void addDeltaAndDump(String deltaFilePath) {
+        addDelta(deltaFilePath);
         dump();
     }
 
-    public FileState findFrontStream(String stream) {
-        List<FileState> streamList = manifest.getStreamList();
-        if (streamList.isEmpty()) {
-            return null;
-        }
-
-        FileState front = streamList.get(0);
-        streamList.remove(0);
-        return front;
-    }
-
-    public void dump() {
+    public synchronized void dump() {
         File file = new File(path + ".tmp");
         try {
             FileWriter fileWriter = new FileWriter(file);
@@ -64,9 +61,23 @@ public class MetaDataManager {
         }
     }
 
-    public String setStreamCompacted(boolean compacted) {
-        return null;
+    public synchronized void setStreamCompacted(List<String> streamList) {
+        manifest.setStreamCompacted(streamList);
     }
+
+    //TODO 这个方法干什么用，要同步吗
+    public FileState findFrontStream(String stream) {
+        List<FileState> streamList = manifest.getStreamList();
+        if (streamList.isEmpty()) {
+            return null;
+        }
+
+        FileState front = streamList.get(0);
+        streamList.remove(0);
+        return front;
+    }
+
+
 
     public String setDeltaCompacted(boolean compacted) {
         return null;
@@ -91,4 +102,6 @@ public class MetaDataManager {
     public String findLatestStreamByDelta(String delta) {
         return null;
     }
+
+
 }

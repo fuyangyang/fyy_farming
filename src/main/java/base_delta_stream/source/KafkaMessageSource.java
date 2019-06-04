@@ -34,9 +34,9 @@ public class KafkaMessageSource {
     public Message get() {
         Message msg = Message.build(currentOffset, currentTimestamp, currentOffset);
         currentOffset++;
-        currentTimestamp += 1000;
+        currentTimestamp += 10000;
         try {
-            sleep(40);
+            sleep(4);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

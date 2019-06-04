@@ -46,12 +46,12 @@ public abstract class AbstractClock<T> implements Clock<T> {
             onMinute(currentMinute);
             handleElement(t);
             if (reachNextHour()) {
-                updaterHourPeriod();
                 boolean reachNextDay = reachNextDay();
                 if(reachNextDay) {
                     updateDayPeriod();
                 }
-                onHour(currentHour, reachNextDay, currentDay);
+                onHour(reachNextDay, currentDay);
+                updaterHourPeriod();
             }
         } else {
             handleElement(t);
@@ -61,13 +61,13 @@ public abstract class AbstractClock<T> implements Clock<T> {
     private void init() {
         updateAllPeriod();
         initialed = true;
-        initial(getCurrentMinute());
+        initial();
     }
 
     /**
      * 用户初始化逻辑
      */
-    protected abstract void initial(Long currentMinute);
+    protected abstract void initial();
 
     protected abstract void handleElement(T t) throws Exception;
 
@@ -81,7 +81,7 @@ public abstract class AbstractClock<T> implements Clock<T> {
      * 合成小时级数据
      * @param reachNextDay
      */
-    public abstract void onHour(Long nextHour, boolean reachNextDay, Long nextDay) throws Exception;
+    public abstract void onHour(boolean reachNextDay, Long nextDay) throws Exception;
 
     /**
      * 完成上一分钟的收尾，开启下一分钟的准备工作

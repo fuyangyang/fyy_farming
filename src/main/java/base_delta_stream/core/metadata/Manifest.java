@@ -10,7 +10,7 @@ public class Manifest {
 
     private List<FileState> baseList = new LinkedList<>();
     private List<FileState> deltaList = new LinkedList<>();
-    private List<FileState> streamList = new LinkedList<>();
+    private List<FileState> streamList = new LinkedList<>();//可以换成treemap，以方便改状态
 
     public Manifest() {
     }
@@ -35,7 +35,23 @@ public class Manifest {
         streamList.add(0, stream);
     }
 
+    public void addDelta(FileState fileState) {
+        deltaList.add(0, fileState);
+    }
+
     public void clearAllStream() {
         streamList.clear();
     }
+
+    public void setStreamCompacted(List<String> list) {
+        for (String stream : list) {
+            for (FileState fileState : streamList) {
+                if (fileState.getPath().equals(stream)) {
+                    fileState.compacted();
+                }
+            }
+        }
+    }
+
+
 }

@@ -4,7 +4,6 @@ package base_delta_stream.core;
 import base_delta_stream.core.compact.CompactionTask;
 import base_delta_stream.core.metadata.MetaDataManager;
 
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
@@ -29,8 +28,8 @@ public class MessageDrivenClock extends AbstractClock<Message> {
     }
 
     @Override
-    protected void initial(Long currentMinute) {
-        streamFileHandler = new StreamFileHandler(modelPath, currentMinute, metaDataManager);
+    protected void initial() {
+        streamFileHandler = new StreamFileHandler(modelPath, getCurrentMinute(), metaDataManager);
     }
 
     @Override
@@ -39,9 +38,11 @@ public class MessageDrivenClock extends AbstractClock<Message> {
     }
 
     @Override
-    public void onHour(Long nextHour, boolean reachNextDay, Long nextDay) throws Exception {
-        List<String> streamList = streamFileHandler.getStreamList();
-        queue.put(new CompactionTask(modelPath, reachNextDay, streamList, null, metaDataManager));
+    public void onHour(boolean reachNextDay, Long nextDay) throws Exception {
+        CompactionTask compactionTask = new CompactionTask(getCurrentHour(), modelPath, reachNextDay,
+                streamFileHandler.fetchStreamListToCompact(), null, metaDataManager);
+//        queue.put(compactionTask);
+        compactionTask.run();
     }
 
     @Override
