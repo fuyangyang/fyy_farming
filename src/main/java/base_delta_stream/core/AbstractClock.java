@@ -34,6 +34,11 @@ public abstract class AbstractClock<T> implements Clock<T> {
     public AbstractClock() {
     }
 
+    /**
+     * TODO 事件枚举显示定义，各事件的handler注册机制
+     * @param t
+     * @throws Exception
+     */
     @Override
     public void onElement(T t) throws Exception {
         timestamp = extractTimestamp(t);

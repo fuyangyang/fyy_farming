@@ -12,7 +12,7 @@ import java.util.List;
  * 合并任务输出：
  *  * 1）合并成功后，把manifest中的被合并的文件状态置为true，更新metadata。然后把list提交到清除队列，让fc线程清除文件。
  */
-public class CompactionTask implements Runnable {
+public class CompactionTask {
 
     /**
      * 是否触发base合并，如果触发，必须先合并完delta后再合并base。
@@ -53,8 +53,7 @@ public class CompactionTask implements Runnable {
         this.metaDataManager = metaDataManager;
     }
 
-    @Override
-    public void run() {
+    public void compact() {
         try {
             compactDelta();
         } catch (IOException e) {
