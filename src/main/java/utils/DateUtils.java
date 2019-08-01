@@ -4,10 +4,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.TimeZone;
 
 /**
- * Created by fuyi on 18/1/22.
+ * not thread-safe
  */
 public class DateUtils {
     private static final SimpleDateFormat SDF_DATE = new SimpleDateFormat("yyyy-MM-dd");
@@ -46,6 +45,5 @@ public class DateUtils {
         System.out.println(addDay("2017-12-31", 1));
         System.out.println(getTime(1542024278466L));
     }
-
 
 }
