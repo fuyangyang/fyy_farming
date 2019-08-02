@@ -29,7 +29,9 @@ public class Tester {
         Contents contents2 = p2.cont();
         Destination destination2 = p2.dest("Beijing");
 
-        System.out.println(contents1.hashCode());
-        System.out.println(contents2.hashCode());
+        System.out.println(p1);
+        System.out.println(p2);
+        System.out.println(contents1);
+        System.out.println(contents2);
     }
 }
