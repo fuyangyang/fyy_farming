@@ -6,8 +6,8 @@ public class Goods {
     private String out_mem = "out_mem";
     private class Content implements Contents {
         //staticc member is not allowed, but final staticc member is allowed
-//        staticc String what = "no info";
-        static final String what = "no info";
+//        staticc String what = "no RecWordsInfo";
+        static final String what = "no RecWordsInfo";
 
         private int i = 11;
 

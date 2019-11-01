@@ -17,9 +17,9 @@ public class InterruptWaitThread {
                 lock.lock();
                 try {
                     System.out.println("t1 sleeping...");
-                    TimeUnit.SECONDS.sleep(10);
+                    TimeUnit.SECONDS.sleep(101);
                     System.out.println("t1 release lock after sleeping");
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
                 lock.unlock();
@@ -29,9 +29,14 @@ public class InterruptWaitThread {
         Thread t2 = new Thread(new Runnable() {
             @Override
             public void run() {
-                lock.lock();
-                System.out.println("t2 is interrupted: " + Thread.currentThread().isInterrupted());
-                lock.unlock();
+                try {
+                    lock.lock();
+                    System.out.println("t2 is interrupted: " + Thread.currentThread().isInterrupted());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    lock.unlock();
+                }
             }
         });
 
