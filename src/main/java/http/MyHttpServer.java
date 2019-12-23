@@ -21,6 +21,7 @@ public class MyHttpServer {
     private static class TestHttpHandler implements HttpHandler {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
+            long start = System.currentTimeMillis();
             String response = "test message";
 //            response = "<!doctype html>\n" +
 //                    "<html>\n" +
@@ -50,6 +51,8 @@ public class MyHttpServer {
             OutputStream os = exchange.getResponseBody();
             os.write(response.getBytes("UTF-8"));
             os.close();
+            long stop = System.currentTimeMillis();
+            System.out.println("server rt: " + (stop - start) + "ms");
         }
     }
 }
