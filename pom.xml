@@ -173,6 +173,12 @@
             <version>1.9.40</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.github.houbb</groupId>
+            <artifactId>opencc4j</artifactId>
+            <version>1.14.0</version> <!-- 最新版本可在 Maven 中央仓库查询 -->
+        </dependency>
+
     </dependencies>
 
     <build>
