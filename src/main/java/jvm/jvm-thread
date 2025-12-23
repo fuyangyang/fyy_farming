@@ -1,5 +1,0 @@
-1. Reference Handler 线程的什么用是什么？
-答：参考https://zhuanlan.zhihu.com/p/40559078
-   该线程的作用就是在GC结束后，将被回收的Reference对象通知其所有者，然后其所有者做相应处理(一般是在下次做查询或者修改的时候清除已经被回收的对象引用)
-2. -XX:HeapDumpOnOutOfMemoryError输出的日志到哪?
-答：参考https://www.jianshu.com/p/c914943448a2，需要参数-XX:HeapDumpPath配合使用。可以测一下
