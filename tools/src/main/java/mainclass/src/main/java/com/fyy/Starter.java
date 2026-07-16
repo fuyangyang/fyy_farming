@@ -1,4 +1,4 @@
-package com.fyy;
+package mainclass.src.main.java.com.fyy;
 
 public class Starter {
     public static void main(String[] args) {
